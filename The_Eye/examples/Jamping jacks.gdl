@@ -1,0 +1,62 @@
+//-------------Original FEATURES-------------------------------------
+FEATURE angle(ShoulderRight.xyz[0] - ElbowRight.xyz[0],  WristRight.xyz[0] - ElbowRight.xyz[0]) AS RightElbow
+FEATURE angle(ShoulderLeft.xyz[0] - ElbowLeft.xyz[0],  WristLeft.xyz[0] - ElbowLeft.xyz[0]) AS LeftElbow
+FEATURE angle(SpineShoulder.xyz[0] - ShoulderRight.xyz[0],  ElbowRight.xyz[0] - ShoulderRight.xyz[0]) AS RightShoulder
+FEATURE angle(SpineShoulder.xyz[0] - ShoulderLeft.xyz[0],  ElbowLeft.xyz[0] - ShoulderLeft.xyz[0]) AS LeftShoulder
+FEATURE angle(ShoulderRight.xyz[0] - ElbowRight.xyz[0],  ShoulderLeft.xyz[0] - ElbowLeft.xyz[0]) AS BetweenWrists
+FEATURE angle(KneeLeft.xyz[0] - HipLeft.xyz[0],  KneeRight.xyz[0] - HipRight.xyz[0]) AS BetweenLegs
+
+//-------------R-GDLv1.0 FEATURES------------------------------------
+FEATURE 10 AS rightelbow_EPS
+FEATURE 10 AS leftelbow_EPS
+FEATURE 10 AS rightshoulder_EPS
+FEATURE 10 AS leftshoulder_EPS
+FEATURE 10 AS betweenwrists_EPS
+FEATURE 10 AS betweenlegs_EPS
+
+FEATURE 160.729751212779 AS rightelbow_MEAN_0
+FEATURE 6.60356192983582 AS rightelbow_DEV_0
+FEATURE 155.074350243194 AS leftelbow_MEAN_0
+FEATURE 10.6507172179687 AS leftelbow_DEV_0
+FEATURE 162.13355842352 AS rightshoulder_MEAN_0
+FEATURE 9.43162854517505 AS rightshoulder_DEV_0
+FEATURE 154.93358439496 AS leftshoulder_MEAN_0
+FEATURE 8.20662772756363 AS leftshoulder_DEV_0
+FEATURE 127.409282305173 AS betweenwrists_MEAN_0
+FEATURE 16.8530404257008 AS betweenwrists_DEV_0
+FEATURE 10.1200048966576 AS betweenlegs_MEAN_0
+FEATURE 5.80034618831717 AS betweenlegs_DEV_0
+
+FEATURE 161.348071856712 AS rightelbow_MEAN_1
+FEATURE 6.2340142708393 AS rightelbow_DEV_1
+FEATURE 159.644421899944 AS leftelbow_MEAN_1
+FEATURE 6.60011046655861 AS leftelbow_DEV_1
+FEATURE 134.012587212204 AS rightshoulder_MEAN_1
+FEATURE 9.84666908772059 AS rightshoulder_DEV_1
+FEATURE 133.773007352048 AS leftshoulder_MEAN_1
+FEATURE 9.10597256456033 AS leftshoulder_DEV_1
+FEATURE 69.8280389234185 AS betweenwrists_MEAN_1
+FEATURE 16.223231151515 AS betweenwrists_DEV_1
+FEATURE 18.7783184962154 AS betweenlegs_MEAN_1
+FEATURE 7.02551965297484 AS betweenlegs_DEV_1
+
+FEATURE 159.999012654535 AS rightelbow_MEAN_2
+FEATURE 7.98826419604563 AS rightelbow_DEV_2
+FEATURE 161.305818198195 AS leftelbow_MEAN_2
+FEATURE 5.0588534528025 AS leftelbow_DEV_2
+FEATURE 118.245653100872 AS rightshoulder_MEAN_2
+FEATURE 8.35227570336733 AS rightshoulder_DEV_2
+FEATURE 116.905928222073 AS leftshoulder_MEAN_2
+FEATURE 9.72810088318638 AS leftshoulder_DEV_2
+FEATURE 19.5481985412877 AS betweenwrists_MEAN_2
+FEATURE 9.61104383099918 AS betweenwrists_DEV_2
+FEATURE 14.2850057481417 AS betweenlegs_MEAN_2
+FEATURE 6.4379714969748 AS betweenlegs_DEV_2
+
+//-------------R-GDLv1.0 RULES---------------------------------------
+RULE abs(rightelbow -rightelbow_MEAN_0) <= rightelbow_DEV_0 + rightelbow_EPS & abs(leftelbow -leftelbow_MEAN_0) <= leftelbow_DEV_0 + leftelbow_EPS & abs(rightshoulder -rightshoulder_MEAN_0) <= rightshoulder_DEV_0 + rightshoulder_EPS & abs(leftshoulder -leftshoulder_MEAN_0) <= leftshoulder_DEV_0 + leftshoulder_EPS & abs(betweenwrists -betweenwrists_MEAN_0) <= betweenwrists_DEV_0 + betweenwrists_EPS & abs(betweenlegs -betweenlegs_MEAN_0) <= betweenlegs_DEV_0 + betweenlegs_EPS THEN ruleName0
+RULE abs(rightelbow -rightelbow_MEAN_1) <= rightelbow_DEV_1 + rightelbow_EPS & abs(leftelbow -leftelbow_MEAN_1) <= leftelbow_DEV_1 + leftelbow_EPS & abs(rightshoulder -rightshoulder_MEAN_1) <= rightshoulder_DEV_1 + rightshoulder_EPS & abs(leftshoulder -leftshoulder_MEAN_1) <= leftshoulder_DEV_1 + leftshoulder_EPS & abs(betweenwrists -betweenwrists_MEAN_1) <= betweenwrists_DEV_1 + betweenwrists_EPS & abs(betweenlegs -betweenlegs_MEAN_1) <= betweenlegs_DEV_1 + betweenlegs_EPS THEN ruleName1
+RULE abs(rightelbow -rightelbow_MEAN_2) <= rightelbow_DEV_2 + rightelbow_EPS & abs(leftelbow -leftelbow_MEAN_2) <= leftelbow_DEV_2 + leftelbow_EPS & abs(rightshoulder -rightshoulder_MEAN_2) <= rightshoulder_DEV_2 + rightshoulder_EPS & abs(leftshoulder -leftshoulder_MEAN_2) <= leftshoulder_DEV_2 + leftshoulder_EPS & abs(betweenwrists -betweenwrists_MEAN_2) <= betweenwrists_DEV_2 + betweenwrists_EPS & abs(betweenlegs -betweenlegs_MEAN_2) <= betweenlegs_DEV_2 + betweenlegs_EPS & HandRight.y[0] < Head.y[0] THEN ruleName2
+
+RULE ruleName2 & sequenceexists("[ruleName0,1][ruleName1,1][ruleName0,1][ruleName2,1]") THEN JJ
+RULE JJ & sequenceexists("[!JJ,1]") THEN JJ!

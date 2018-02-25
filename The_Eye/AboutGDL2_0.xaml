@@ -1,0 +1,22 @@
+﻿<Window x:Class="org.GDLStudio.AboutGDL_20"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About GDL Script Editor" Height="532.701" Width="367" ResizeMode="NoResize" WindowStyle="ToolWindow" Background="#FF999999" WindowStartupLocation="CenterScreen" Icon="Images/GDL ICO.png">
+    <Window.Resources>
+        <Style x:Key="Flat">
+            <Setter Property="Control.Background" Value="{x:Null}" />
+            <Setter Property="Control.BorderBrush" Value="{x:Null}" />
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FFCCCCCC">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+            <RowDefinition Height="108"/>
+
+        </Grid.RowDefinitions>
+        <TextBox Text="Abcsd" FontSize="14" FontWeight="Bold" Grid.Row="0" Style="{StaticResource Flat}" HorizontalAlignment="Center" Name="TextBoxAppName" VerticalAlignment="Center" IsReadOnly="True" TextWrapping="Wrap" Width="343" Height="25" Background="#00000000" Padding="0" FontStretch="Condensed" TextAlignment="Center" Margin="9,0" />
+        <Image Style="{StaticResource Flat}" Grid.Row="1" HorizontalAlignment="Center" Height="342" Width="343" Name="image1" Stretch="Fill" VerticalAlignment="Center"  OpacityMask="Black" Source="Images/GDL Logo color.png" Margin="9,15" />
+        <TextBox Text="1" Grid.Row="2" Style="{StaticResource Flat}" HorizontalAlignment="Center" Name="TextBoxCredits" VerticalAlignment="Center" IsReadOnly="True" TextWrapping="Wrap" Width="343" Height="102" Background="#00000000" Padding="0" Margin="0,0,0,0"/>
+    </Grid>
+</Window>

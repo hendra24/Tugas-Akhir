@@ -1,0 +1,135 @@
+﻿<SyntaxDefinition name="GDLscript"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    <Color name="Comment" foreground="White" />
+    <Color name="String" foreground="Lime" />
+    <Color name="Keywords" foreground="Red"/>
+
+  <!-- This is the main ruleset. -->
+    <RuleSet ignoreCase="true">
+        <Span color="Comment" begin="//" />
+        <Span color="Comment" multiline="true" 
+           begin="/\*" end="\*/" />
+        
+        <Span color="String">
+            <Begin>"</Begin>
+            <End>"</End>
+            <RuleSet>
+                <!-- nested span for escape sequences -->
+                <Span begin="\\" end="." />
+            </RuleSet>
+        </Span>
+        
+        <Keywords fontWeight="bold" foreground="Red">
+            <Word>rule</Word>
+            <Word>then</Word>
+            <Word>feature</Word>
+            <Word>as</Word>
+            <!-- ... -->
+        </Keywords>
+
+      <Keywords fontWeight="bold" foreground="Green">
+        <Word>+</Word>
+        <Word>-</Word>
+        <Word>/</Word>
+        <Word>*</Word>
+        <Word>^</Word>
+        <Word>%</Word>
+        
+        <Word>=</Word>
+        <Word>&lt;=</Word>
+        <Word>&lt;</Word>
+        <Word>&gt;</Word>
+        <Word>&gt;=</Word>
+        <Word>!=</Word>
+      </Keywords>
+
+      <Keywords fontWeight="bold" foreground="Cyan">
+        <Word>&amp;</Word>
+        <Word>|</Word>
+        <Word>(</Word>
+        <Word>)</Word>
+        <Word>[</Word>
+        <Word>]</Word>
+        <Word>.x</Word>
+        <Word>.y</Word>
+        <Word>.z</Word>
+        <Word>.xyz</Word>
+        <Word>,</Word>
+        
+        <Word>sequenceexists</Word>
+        <Word>sequencescore</Word>
+        <Word>rulepersists</Word>
+        <!--<Word>checkcollinearity</Word>
+        <Word>checkcircularity</Word>-->
+
+        <Word>not</Word>
+        
+        <Word>abs</Word>
+        <Word>sqrt</Word>
+        <Word>sgn</Word>
+        <Word>sgnfuzzy</Word>
+
+        <Word>distance</Word>
+        <Word>cross</Word>
+        <Word>angle</Word>
+
+        <Word>SpineBase</Word>
+        <Word>SpineMid</Word>
+        <Word>Neck</Word>
+        <Word>Head</Word>
+        <Word>ShoulderLeft</Word>  
+        <Word>ElbowLeft</Word>  
+        <Word>WristLeft</Word>  
+        <Word>HandLeft</Word>
+        <Word>ShoulderRight</Word>  
+        <Word>ElbowRight</Word>  
+        <Word>WristRight</Word>
+        <Word>HandRight</Word>  
+        <Word>HipLeft</Word>  
+        <Word>KneeLeft</Word>  
+        <Word>AnkleLeft</Word> 
+        <Word>FootLeft</Word> 
+        <Word>HipRight</Word>
+        <Word>KneeRight</Word> 
+        <Word>AnkleRight</Word> 
+        <Word>FootRight</Word>
+        <Word>SpineShoulder</Word>  
+        <Word>HandTipLeft</Word>  
+        <Word>ThumbLeft</Word>  
+        <Word>HandTipRight</Word>
+        <Word>ThumbRight</Word>
+        <!--
+        <Word>HipCenter</Word>
+        <Word>Spine</Word>
+        <Word>ShoulderCenter</Word>
+        <Word>Head</Word>
+        <Word>ShoulderLeft</Word>
+        <Word>ElbowLeft</Word>
+        <Word>WristLeft</Word>
+        <Word>HandLeft</Word>
+        <Word>ShoulderRight</Word>
+        <Word>ElbowRight</Word>
+        <Word>WristRight</Word>
+        <Word>HandRight</Word>
+        <Word>HipLeft</Word>
+        <Word>KneeLeft</Word>
+        <Word>AnkleLeft</Word>
+        <Word>FootLeft</Word>
+        <Word>HipRight</Word>
+        <Word>KneeRight</Word>
+        <Word>AnkleRight</Word>
+        <Word>FootRight</Word>-->
+      </Keywords>
+
+      <!-- Digits -->
+        <Rule foreground="Magenta">
+            (    \d+(\.[0-9]+)?   #number with optional floating point
+            |    \.[0-9]+         #or just starting with floating point
+            )
+        </Rule>
+      <!-- Conclusions -->
+      <Rule foreground="Teal">
+        [a-zA-Z!_0-9]+
+      </Rule>
+    </RuleSet>
+</SyntaxDefinition>
