@@ -1,11 +1,9 @@
 //Right hand is over head
-RULE HandRight.y[0] - Head.y[0] > 0 THEN TanganKananDiKepala!
+RULE HandRight.y[0] - Head.y[0] > 0 THEN HandOverHead!
 
-//left hand is over head
-RULE HandLeft.y[0] - Head.y[0] > 0 THEN TanganDiKiriKepala!
-
-//Looking left
-RULE abs(180-angle(Neck.xyz[0]-Head.xyz[0],Neck.xyz[0]-SpineShoulder.xyz[0])) > 0 THEN LOOKAROUND
+//Right hand is over head
+FEATURE HandRight.y[0] - Head.y[0] AS HandMinusHeadY
+RULE HandMinusHeadY > 0 THEN HandOverHeadFeature!
 
 //Waving with right hand
 RULE abs(HandRight.z[0] - Head.z[0]) < 200 THEN HandZHead

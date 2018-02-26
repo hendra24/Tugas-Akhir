@@ -196,7 +196,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     () =>
                     {
                             ProgressSlider.Value += 1;
-                            DrawImage(TSkeletons);
+                            //DrawImage(TSkeletons);
                         }));
                             Thread.Sleep((int)TSkeletons[0].TimePeriod);
                             line++;
@@ -247,10 +247,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             HendlerHolder.OpenNewPlayerWindow(true, SKLFileName);
             SKLFileName = null;
             ChangeContentWhileRecordingOrPlaying(false);
-            SKLRecording = TSkeletonHelper.ReadRecordingFromFile(SKLFileName);
-            LoadSKLRecording(SKLFileName);
-            ChangeContentWhileRecordingOrPlaying(false);
-            if (SKLRecording != null)
+            //SKLRecording = TSkeletonHelper.ReadRecordingFromFile(SKLFileName);
+            //LoadSKLRecording(SKLFileName);
+            //ChangeContentWhileRecordingOrPlaying(false);
+            /*if (SKLRecording != null)
             {
                 ProgressSlider.Maximum = SKLRecording.Count -1;
                 ProgressSlider.Value = ProgressSlider.Maximum;
@@ -263,7 +263,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 ProgressSlider.Maximum = 0;
                 ProgressSlider.Value = 0;
                 DrawImage(null);
-            }
+            }*/
         }
 
         public void LoadSKLRecording(String SKLFile)
