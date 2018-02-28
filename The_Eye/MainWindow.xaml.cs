@@ -1777,24 +1777,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             RunParser(GDLFileLoaded);
         }
 
-        #region Editor events
-
-        public void TextChangedEventHandler(
-        Object sender,
-        EventArgs e
-        )
-        {
-            String appllicationName = HendlerHolder.ApplicationName;
-            if (appllicationName == null)
-                appllicationName = "";
-            isDataDirty = true;
-            if (GDLFileLoaded == null)
-                this.Title = appllicationName + "*";
-            else
-                this.Title = appllicationName + " * -[" + GDLFileLoaded + "]";
-        }
-
-        #endregion
+       
 
         private void SkeletonImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
