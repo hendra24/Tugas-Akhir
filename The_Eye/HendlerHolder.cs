@@ -22,7 +22,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         public static int DisplayWidth = 0;
         public static int DisplayHeight = 0;
         public static bool FileDroppingEnabled = true;
-        public static String ApplicationName = "GDL Studio for Kinect 2";
+        public static String ApplicationName = "The Eye v.1";
         public static RecognitionCounter RecognitionCounter = null;
 
 

@@ -416,7 +416,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 PlayerWindow3D playerWindow = (PlayerWindow3D)HendlerHolder.PlayerWindows3D[a];
                 playerWindow.Close();
             }
-            //}
+            
             if (this.bodyFrameReader != null)
             {
                 // BodyFrameReader is IDisposable
@@ -889,43 +889,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
                         //if (Background.SelectedIndex == 1)
                         dc.DrawImage(this.colorBitmap, new Rect(0, 0, 512, 424));
-                        /*int penIndex = 0;
-                        foreach (Body body in this.bodies)
-                        {
-                            Pen drawPen = HendlerHolder.BodyColors[penIndex++];
-
-                            if (body.IsTracked)
-                            {
-                                this.DrawClippedEdges(body, dc);
-
-                                IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-                                // convert the joint points to depth (display) space
-                                Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
-                                foreach (JointType jointType in joints.Keys)
-                                {
-                                    // sometimes the depth(Z) of an inferred joint may show as negative
-                                    // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-                                    CameraSpacePoint position = joints[jointType].Position;
-                                    if (position.Z < 0)
-                                    {
-                                        position.Z = HendlerHolder.InferredZPositionClamp;
-                                    }
-
-                                    ColorSpacePoint depthSpacePoint = HendlerHolder.coordinateMapper.MapCameraPointToColorSpace(position);
-                                    jointPoints[jointType] = new Point(depthSpacePoint.X - 300, depthSpacePoint.Y - 300);
-                                    //jointPoints[jointType] = new Point(depthSpacePoint.X, depthSpacePoint.Y);
-                                }
-
-                                this.DrawBody(joints, jointPoints, dc, drawPen);
-
-                                this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
-                                this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
-                            }
-                        }
-                        */
-                        // prevent drawing outside of our render area
                         this.rgbDrawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                         UpdateRGBImage(rgbImageSource);
                         //UpdateDepthImage(rgbImageSource);
@@ -946,43 +909,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
                         //if (Background.SelectedIndex == 1)
                         dc.DrawImage(this.infraredBitmap, new Rect(0, 0, 512, 424));
-                        /*int penIndex = 0;
-                        foreach (Body body in this.bodies)
-                        {
-                            Pen drawPen = HendlerHolder.BodyColors[penIndex++];
-
-                            if (body.IsTracked)
-                            {
-                                this.DrawClippedEdges(body, dc);
-
-                                IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-                                // convert the joint points to depth (display) space
-                                Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
-                                foreach (JointType jointType in joints.Keys)
-                                {
-                                    // sometimes the depth(Z) of an inferred joint may show as negative
-                                    // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-                                    CameraSpacePoint position = joints[jointType].Position;
-                                    if (position.Z < 0)
-                                    {
-                                        position.Z = HendlerHolder.InferredZPositionClamp;
-                                    }
-
-                                    ColorSpacePoint depthSpacePoint = HendlerHolder.coordinateMapper.MapCameraPointToColorSpace(position);
-                                    jointPoints[jointType] = new Point(depthSpacePoint.X - 300, depthSpacePoint.Y - 300);
-                                    //jointPoints[jointType] = new Point(depthSpacePoint.X, depthSpacePoint.Y);
-                                }
-
-                                this.DrawBody(joints, jointPoints, dc, drawPen);
-
-                                this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
-                                this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
-                            }
-                        }
-                        */
-                        // prevent drawing outside of our render area
+                       
                         this.infraredDrawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                         UpdateInfraredImage(infraredImageSource);
                         //UpdateDepthImage(rgbImageSource);
@@ -991,7 +918,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             HendlerHolder.InfraredPlayerWindow.UpdateImage(infraredImageSource);
                         }
                     }
-                    //HendlerHolder.SkeletonPlayerWindow.UpdateImage(imageSource);*/
+           
                 }
             }
             if (dataReceived)
@@ -1111,11 +1038,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             this.DrawClippedEdges(tSkeleton, drawingContext);
 
-            //IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-            // convert the joint points to depth (display) space
-            //Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
             //foreach (JointType jointType in joints.Keys)
             Point[] updatedPositions = new Point[tSkeleton.Position.Length];
             for (int b = 0; b < tSkeleton.Position.Length; b++)
@@ -1179,8 +1101,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void DrawBone(TSkeleton tSkeleton, Point[] jointPoints, int jointType0, int jointType1, DrawingContext drawingContext, Pen drawingPen)
         {
-            //Joint joint0 = joints[jointType0];
-            //Joint joint1 = joints[jointType1];
 
             // If we can't find either of these joints, exit
             if (tSkeleton.TrackingState[jointType0] == TrackingState.NotTracked ||
@@ -1582,26 +1502,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             return rulesContent;
         }
 
-
-        
-        
-        private void EnableFileDropping_Click(object sender, RoutedEventArgs e)
-        {
-            HendlerHolder.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-        }
-        private void HelpSyntax_Click(object sender, RoutedEventArgs e)
-        {
-            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-        }
         private void HelpAbout_Click(object sender, RoutedEventArgs e)
         {
             AboutGDL_20 about = new AboutGDL_20();
             about.ShowDialog();
-            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
-            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
         }
         private void Expander_Expanded(object sender, RoutedEventArgs e)
         {
@@ -1996,5 +1900,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+      
     }
 }
