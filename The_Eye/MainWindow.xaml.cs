@@ -1507,17 +1507,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             AboutGDL_20 about = new AboutGDL_20();
             about.ShowDialog();
         }
-        private void Expander_Expanded(object sender, RoutedEventArgs e)
-        {
-            layoutGrid.RowDefinitions[2].Height = new GridLength(145);
-            ExpanderStreams.Header = "Hide device streams";
-        }
-
-        private void Expander_Collapsed(object sender, RoutedEventArgs e)
-        {
-            layoutGrid.RowDefinitions[2].Height = new GridLength(25);
-            ExpanderStreams.Header = "Show device streams";
-        }
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
