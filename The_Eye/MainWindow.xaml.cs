@@ -31,6 +31,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private Dictionary<string, int> dictionary;
         /// <summary>
         /// Drawing group for body rendering output
         /// </summary>
@@ -189,8 +190,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // Allocate space to put the color pixels we'll create
             this.colorPixelsDepth = new byte[this.depthFrameDescription.Width * this.depthFrameDescription.Height * sizeof(int)];
 
-
-
             // open the reader for the color frames
             this.colorFrameReader = HendlerHolder.kinectSensor.ColorFrameSource.OpenReader();
             // create the colorFrameDescription from the ColorFrameSource using Bgra format
@@ -307,7 +306,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             FPSStopwatch.Start();
 
             //this.Title = HendlerHolder.ApplicationName;
-            //HendlerHolder.OpenNewPlayerWindow3D(TSkeletonHelper.ReadRecordingFromFile("SkeletonRecord12.skl"));
         }
 
         public static IHighlightingDefinition LoadHighlightingDefinition(string resourceName)
@@ -324,17 +322,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-        /*
-        /// <summary>
-        /// Gets the bitmap to display
-        /// </summary>
-        public ImageSource ImageSource
-        {
-            get
-            {
-                return this.imageSource;
-            }
-        }*/
 
         /// <summary>
         /// Gets or sets the current status text to display
@@ -379,7 +366,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 GLUT = new byte[6000];
                 BLUT = new byte[6000];
                 System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(System.AppDomain.CurrentDomain.BaseDirectory + "alut.tif");
-                //System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(org.GDLStudio.Properties.Resources.alut);
                 System.Drawing.Color color;
                 for (int a = 0; a < RLUT.Length; a++)
                 {
@@ -402,7 +388,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="e">event arguments</param>
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            //foreach (PlayerWindow playerWindow in HendlerHolder.PlayerWindows)
             int count = HendlerHolder.PlayerWindows.Count -1;
             for (int a = count; a >= 0; a--)
             {
@@ -723,8 +708,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 }
                 if (firstTracked != null)
                 {
-                    
-
                     Point3D[] bodyParts = HendlerHolder.GenerateBodyPartArray(firstTracked, 0);
                     GDLWatch.Stop();
                     double TimeHelp = GDLWatch.Elapsed.TotalSeconds;
@@ -774,10 +757,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 {
                     // Draw a transparent background to set the render size
                     dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-                    //if (Background.SelectedIndex == 0)
-                    //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
-                    //if (Background.SelectedIndex == 1)
-                    //    dc.DrawImage(this.depthBitmap, new Rect(0, 0, 512, 424));
                     int penIndex = 0;
                     foreach (Body body in this.bodies)
                     {
@@ -1329,22 +1308,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     double seconds = (double)firstTracked.TimePeriod / 1000.0;
                     //TSkeleton fT = TSkeletonHelper.TSkeletonToSkeleton(firstTracked);
                     Point3D[] bodyParts = HendlerHolder.GenerateBodyPartArray(firstTracked, 0);
-                    //String[] con = inter.ReturnConclusions(fT, 0, seconds);
-                    //String[] con = inter.ReturnConclusions(bodyParts, 0, seconds);
                     String[] con = gdlI2.ReturnConclusions(bodyParts, seconds);
                     for (int c = 0; c < con.Length; c++)
                     {
-                        /*if (dictionary[con[c]] != null)
-                        {
-                            count = dictionary[con[c]];
-                        }
-                        else
-                            count = 0;
-                        count++;
-                        if (!con[c].Contains("!") && showSubrules)
-                            dictionary[con[c]] = count;
-                        if (con[c].Contains("!") && showMainRules)
-                            dictionary[con[c]] = count;*/
                         if (!con[c].Contains("!") && showSubrules)
                         {
                             Dispatcher.Invoke(
@@ -1493,12 +1459,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 rulesContent = rulesContent.Replace(pair.Key.ToLower(), pair.Value);
             }
-            /*while (dictionary.Count > 0)
-            {
-                dictionary
-                rulesContent = rulesContent.Replace(pair.Key.ToLower(), pair.Value);
-            }*/
-            //System.IO.File.WriteAllText(file10, rulesContent);
             return rulesContent;
         }
 
@@ -1877,6 +1837,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         }
 
-      
+        private void textBox1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
+
+        
     }
 }

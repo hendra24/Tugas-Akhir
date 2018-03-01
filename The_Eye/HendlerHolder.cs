@@ -152,17 +152,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 return true;
             return false;
         }
-        /*
-        public static PlayerWindow OpenNewPlayerWindow(bool Show = true)
-        {
-            PlayerWindow playerWindow = new PlayerWindow();
-            PlayerWindows.Add(playerWindow);
-            if (Show)
-            {
-                playerWindow.Show();
-            }
-            return playerWindow;
-        }*/
+        
         public static RecognitionCounter OpenRecognitionCounter()
         {
             if (RecognitionCounter == null)

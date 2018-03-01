@@ -213,7 +213,7 @@
                 <MenuItem Header="_About GDL Studio"  Click="HelpAbout_Click"/>
             </MenuItem>
         </Menu>
-        <StackPanel Margin="10,35,0,0" Grid.Row="2">
+        <StackPanel Margin="10,24,0,0" Grid.Row="2">
 
             <Grid Margin="2,0,0,0" Height="480" Width="640" HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="False" RenderTransformOrigin="0.5,0.5">
                 <Image HorizontalAlignment="Left" Margin="0,0,0,0" x:Name="RGBImage" Source="Images\Background.png" Stretch="Fill" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"
@@ -222,10 +222,11 @@
                 <TextBox Height="19" HorizontalAlignment="Left" x:Name="RGBFPS" VerticalAlignment="Top" Width="60" Background="#80404040" Foreground="White" Text="0" BorderBrush="#00000000" IsReadOnly="True" />
                 <CheckBox Content="CheckBox" x:Name="EnableRGB" HorizontalAlignment="Left" Margin="60,2,0,0" VerticalAlignment="Top" Click="EnableRGB_Click"/>
             </Grid>
+            <TextBox x:Name="counterTextBox" Height="23" TextWrapping="Wrap" Text="TextBox" HorizontalAlignment="Left" Width="642" TextAlignment="Center" FontSize="16"/>
             <Grid
               Width="{Binding ActualWidth, ElementName=Container}"
                Height="{Binding ActualHeight, ElementName=Container}"
-              x:Name="StreamsGrid" Margin="0,0,70,10" HorizontalAlignment="Right"
+              x:Name="StreamsGrid" Margin="0,0,70,0" HorizontalAlignment="Right"
               >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="120" />
@@ -253,11 +254,12 @@
                 </Grid>
             </Grid>
 
+
         </StackPanel>
         <StatusBar Grid.Row="4" Margin="0,10,0,0" Name="statusBar1" Background="#FF999999">
             <Label Name="ProcessingLabel" Content="Processing..." Width="120" Visibility="Hidden" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Red" Foreground="White" FlowDirection="LeftToRight" />
         </StatusBar>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="244,3,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Camera Stream" VerticalAlignment="Top" FontSize="22" Foreground="White" FontWeight="Bold"/>
+        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="22" Margin="280,2,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Camera Stream" VerticalAlignment="Top" Width="117" TextChanged="textBox1_TextChanged" FontSize="14" Background="#FF202020" Foreground="White" BorderBrush="#FF202020"/>
 
     </Grid>
 </Window>
