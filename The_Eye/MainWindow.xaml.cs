@@ -26,6 +26,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using System.Windows.Input;
     using org.GDLStudio;
 
+
     /// <summary>
     /// Interaction logic for MainWindow
     /// </summary>
@@ -155,6 +156,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         Stopwatch GDLWatch = new Stopwatch();
         Stopwatch FPSStopwatch = new Stopwatch();
         public GDLInterpreter inter = null;
+
         ////////
         private static double AcquisitionFrequencyTreshold = 0.01;
         /// <summary>
@@ -164,7 +166,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             // one sensor is currently supported
             HendlerHolder.kinectSensor = KinectSensor.GetDefault();
-
+            dictionary = new Dictionary<string, int>();
             // get the coordinate mapper
             HendlerHolder.coordinateMapper = HendlerHolder.kinectSensor.CoordinateMapper;
             CameraIntrinsics ci = HendlerHolder.coordinateMapper.GetDepthCameraIntrinsics();
@@ -296,13 +298,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             HendlerHolder.BodyColors.Add(new Pen(Brushes.Violet, 6));
             HendlerHolder.FillJointsConnectivity();
 
-            //text editor setup
-            //textEditor.SyntaxHighlighting = LoadHighlightingDefinition("GDLscript.xshd");
-            //textEditor.TextArea.Caret.PositionChanged += this.CaretChangedEvent;
-            //textEditor.TextChanged += this.TextChangedEventHandler;
-
-            //Title = getApplicationName();
-            //textEditor.ShowLineNumbers = true;
             FPSStopwatch.Start();
 
             //this.Title = HendlerHolder.ApplicationName;
@@ -730,6 +725,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             conclusionsWithExclamation += con[a] + "\r\n";
                         }
                         HendlerHolder.OpenRecognitionCounter().AddToDictionary(con[a]);
+                        AddToDictionary(con[a]);
                     }
                     
                     if (HendlerHolder.SkeletonPlayerWindow != null)
@@ -1840,6 +1836,58 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void textBox1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
 
+        }
+
+        public void AddToDictionary(String key)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                int countHelp = dictionary[key];
+                countHelp++;
+                dictionary[key] = countHelp;
+            }
+            else
+            {
+                dictionary.Add(key, 1);
+            }
+            SetText(dictionary);
+        }
+
+
+        public void SetText(Dictionary<string, int> dictionary)
+        {
+            string text = "";
+            foreach (KeyValuePair<string, int> pair in dictionary)
+            {
+                if (pair.Key.Contains("!"))
+                    text += pair.Key + ": " + pair.Value + "\r\n";
+                
+            }
+            this.counterTextBox.Text = text;
+            
+        }
+
+        public void takeSS()
+        {
+            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+            g.CopyFromScreen(2, 20, 0, 0, new System.Drawing.Size(828,474));
+            bmp.Save("C:\\Users\\Hendra\\Desktop\\"+filename);
+        }
+
+        private void klik(object sender, RoutedEventArgs e)
+        {
+            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+            string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
+            string path = Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
+            // create a png bitmap encoder which knows how to save a .png file
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            // create frame from the writable bitmap and add to encoder
+            encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
+            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
+            FileStream fs = new FileStream(path, FileMode.Create);
+            encoder.Save(fs);
         }
 
         
