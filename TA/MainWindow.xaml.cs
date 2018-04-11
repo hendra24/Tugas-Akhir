@@ -26,13 +26,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using System.Windows.Input;
     using org.GDLStudio;
 
-
     /// <summary>
     /// Interaction logic for MainWindow
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private Dictionary<string, int> dictionary;
         /// <summary>
         /// Drawing group for body rendering output
         /// </summary>
@@ -156,7 +154,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         Stopwatch GDLWatch = new Stopwatch();
         Stopwatch FPSStopwatch = new Stopwatch();
         public GDLInterpreter inter = null;
-
         ////////
         private static double AcquisitionFrequencyTreshold = 0.01;
         /// <summary>
@@ -166,7 +163,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             // one sensor is currently supported
             HendlerHolder.kinectSensor = KinectSensor.GetDefault();
-            dictionary = new Dictionary<string, int>();
+
             // get the coordinate mapper
             HendlerHolder.coordinateMapper = HendlerHolder.kinectSensor.CoordinateMapper;
             CameraIntrinsics ci = HendlerHolder.coordinateMapper.GetDepthCameraIntrinsics();
@@ -191,6 +188,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.depthBitmap = new WriteableBitmap(this.depthFrameDescription.Width, this.depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
             // Allocate space to put the color pixels we'll create
             this.colorPixelsDepth = new byte[this.depthFrameDescription.Width * this.depthFrameDescription.Height * sizeof(int)];
+
+
 
             // open the reader for the color frames
             this.colorFrameReader = HendlerHolder.kinectSensor.ColorFrameSource.OpenReader();
@@ -282,6 +281,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             // initialize the components (controls) of the window
             this.InitializeComponent();
+            
 
             HendlerHolder.MainWindow = this;
             //HendlerHolder.OpenNewPlayerWindow();
@@ -298,9 +298,17 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             HendlerHolder.BodyColors.Add(new Pen(Brushes.Violet, 6));
             HendlerHolder.FillJointsConnectivity();
 
+            //text editor setup
+            textEditor.SyntaxHighlighting = LoadHighlightingDefinition("GDLscript.xshd");
+            textEditor.TextArea.Caret.PositionChanged += this.CaretChangedEvent;
+            textEditor.TextChanged += this.TextChangedEventHandler;
+
+            //Title = getApplicationName();
+            textEditor.ShowLineNumbers = true;
             FPSStopwatch.Start();
 
             //this.Title = HendlerHolder.ApplicationName;
+            //HendlerHolder.OpenNewPlayerWindow3D(TSkeletonHelper.ReadRecordingFromFile("SkeletonRecord12.skl"));
         }
 
         public static IHighlightingDefinition LoadHighlightingDefinition(string resourceName)
@@ -317,6 +325,17 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        /*
+        /// <summary>
+        /// Gets the bitmap to display
+        /// </summary>
+        public ImageSource ImageSource
+        {
+            get
+            {
+                return this.imageSource;
+            }
+        }*/
 
         /// <summary>
         /// Gets or sets the current status text to display
@@ -354,11 +373,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 this.bodyFrameReader.FrameArrived += this.ReaderBody_FrameArrived;
                 GDLWatch.Start();
+                // wire handler for frame arrival
+                //this.depthFrameReader.FrameArrived += this.ReaderDepth_FrameArrived;
 
                 RLUT = new byte[6000];
                 GLUT = new byte[6000];
                 BLUT = new byte[6000];
                 System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(System.AppDomain.CurrentDomain.BaseDirectory + "alut.tif");
+                //System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(org.GDLStudio.Properties.Resources.alut);
                 System.Drawing.Color color;
                 for (int a = 0; a < RLUT.Length; a++)
                 {
@@ -381,6 +403,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="e">event arguments</param>
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
+            //foreach (PlayerWindow playerWindow in HendlerHolder.PlayerWindows)
             int count = HendlerHolder.PlayerWindows.Count -1;
             for (int a = count; a >= 0; a--)
             {
@@ -394,7 +417,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 PlayerWindow3D playerWindow = (PlayerWindow3D)HendlerHolder.PlayerWindows3D[a];
                 playerWindow.Close();
             }
-            
+            //}
             if (this.bodyFrameReader != null)
             {
                 // BodyFrameReader is IDisposable
@@ -701,12 +724,20 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 }
                 if (firstTracked != null)
                 {
+                    
+
                     Point3D[] bodyParts = HendlerHolder.GenerateBodyPartArray(firstTracked, 0);
                     GDLWatch.Stop();
                     double TimeHelp = GDLWatch.Elapsed.TotalSeconds;
+                    //double TimeHelp = (double)GDLWatch.ElapsedMilliseconds / 1000.0;
                     GDLWatch.Reset();
                     GDLWatch.Start();
+                    //String[] con = inter.ReturnConclusions(firstTracked, 0, TimeHelp);
+                    //String[] con = inter.ReturnConclusions(bodyParts, 0, TimeHelp);
                     String[] con = inter.ReturnConclusions(bodyParts, TimeHelp);
+                    //if (HendlerHolder.SkeletonPlayerWindow != null)
+                      //  HendlerHolder.SkeletonPlayerWindow.Up
+                    //this.ConclusionsLabel.Content = "";
                     String allConclusions = "";
                     String conclusionsWithExclamation = "";
                     for (int a = 0; a < con.Length; a++)
@@ -717,7 +748,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             conclusionsWithExclamation += con[a] + "\r\n";
                         }
                         HendlerHolder.OpenRecognitionCounter().AddToDictionary(con[a]);
-                        AddToDictionary(con[a]);
                     }
                     
                     if (HendlerHolder.SkeletonPlayerWindow != null)
@@ -745,8 +775,12 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 {
                     // Draw a transparent background to set the render size
                     dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                    //if (Background.SelectedIndex == 0)
+                    //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
+                    //if (Background.SelectedIndex == 1)
+                    //    dc.DrawImage(this.depthBitmap, new Rect(0, 0, 512, 424));
                     int penIndex = 0;
-                    foreach (Body body in this.bodies)
+                    foreach (Skeleton body in this.bodies)
                     {
                         Pen drawPen = HendlerHolder.BodyColors[penIndex++];
 
@@ -856,6 +890,43 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
                         //if (Background.SelectedIndex == 1)
                         dc.DrawImage(this.colorBitmap, new Rect(0, 0, 512, 424));
+                        /*int penIndex = 0;
+                        foreach (Body body in this.bodies)
+                        {
+                            Pen drawPen = HendlerHolder.BodyColors[penIndex++];
+
+                            if (body.IsTracked)
+                            {
+                                this.DrawClippedEdges(body, dc);
+
+                                IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
+                                // convert the joint points to depth (display) space
+                                Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+
+                                foreach (JointType jointType in joints.Keys)
+                                {
+                                    // sometimes the depth(Z) of an inferred joint may show as negative
+                                    // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
+                                    CameraSpacePoint position = joints[jointType].Position;
+                                    if (position.Z < 0)
+                                    {
+                                        position.Z = HendlerHolder.InferredZPositionClamp;
+                                    }
+
+                                    ColorSpacePoint depthSpacePoint = HendlerHolder.coordinateMapper.MapCameraPointToColorSpace(position);
+                                    jointPoints[jointType] = new Point(depthSpacePoint.X - 300, depthSpacePoint.Y - 300);
+                                    //jointPoints[jointType] = new Point(depthSpacePoint.X, depthSpacePoint.Y);
+                                }
+
+                                this.DrawBody(joints, jointPoints, dc, drawPen);
+
+                                this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
+                                this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
+                            }
+                        }
+                        */
+                        // prevent drawing outside of our render area
                         this.rgbDrawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                         UpdateRGBImage(rgbImageSource);
                         //UpdateDepthImage(rgbImageSource);
@@ -876,7 +947,43 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
                         //if (Background.SelectedIndex == 1)
                         dc.DrawImage(this.infraredBitmap, new Rect(0, 0, 512, 424));
-                       
+                        /*int penIndex = 0;
+                        foreach (Body body in this.bodies)
+                        {
+                            Pen drawPen = HendlerHolder.BodyColors[penIndex++];
+
+                            if (body.IsTracked)
+                            {
+                                this.DrawClippedEdges(body, dc);
+
+                                IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
+                                // convert the joint points to depth (display) space
+                                Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+
+                                foreach (JointType jointType in joints.Keys)
+                                {
+                                    // sometimes the depth(Z) of an inferred joint may show as negative
+                                    // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
+                                    CameraSpacePoint position = joints[jointType].Position;
+                                    if (position.Z < 0)
+                                    {
+                                        position.Z = HendlerHolder.InferredZPositionClamp;
+                                    }
+
+                                    ColorSpacePoint depthSpacePoint = HendlerHolder.coordinateMapper.MapCameraPointToColorSpace(position);
+                                    jointPoints[jointType] = new Point(depthSpacePoint.X - 300, depthSpacePoint.Y - 300);
+                                    //jointPoints[jointType] = new Point(depthSpacePoint.X, depthSpacePoint.Y);
+                                }
+
+                                this.DrawBody(joints, jointPoints, dc, drawPen);
+
+                                this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
+                                this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
+                            }
+                        }
+                        */
+                        // prevent drawing outside of our render area
                         this.infraredDrawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                         UpdateInfraredImage(infraredImageSource);
                         //UpdateDepthImage(rgbImageSource);
@@ -885,7 +992,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             HendlerHolder.InfraredPlayerWindow.UpdateImage(infraredImageSource);
                         }
                     }
-           
+                    //HendlerHolder.SkeletonPlayerWindow.UpdateImage(imageSource);*/
                 }
             }
             if (dataReceived)
@@ -1005,6 +1112,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             this.DrawClippedEdges(tSkeleton, drawingContext);
 
+            //IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
+            // convert the joint points to depth (display) space
+            //Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+
             //foreach (JointType jointType in joints.Keys)
             Point[] updatedPositions = new Point[tSkeleton.Position.Length];
             for (int b = 0; b < tSkeleton.Position.Length; b++)
@@ -1068,6 +1180,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void DrawBone(TSkeleton tSkeleton, Point[] jointPoints, int jointType0, int jointType1, DrawingContext drawingContext, Pen drawingPen)
         {
+            //Joint joint0 = joints[jointType0];
+            //Joint joint1 = joints[jointType1];
 
             // If we can't find either of these joints, exit
             if (tSkeleton.TrackingState[jointType0] == TrackingState.NotTracked ||
@@ -1296,9 +1410,22 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     double seconds = (double)firstTracked.TimePeriod / 1000.0;
                     //TSkeleton fT = TSkeletonHelper.TSkeletonToSkeleton(firstTracked);
                     Point3D[] bodyParts = HendlerHolder.GenerateBodyPartArray(firstTracked, 0);
+                    //String[] con = inter.ReturnConclusions(fT, 0, seconds);
+                    //String[] con = inter.ReturnConclusions(bodyParts, 0, seconds);
                     String[] con = gdlI2.ReturnConclusions(bodyParts, seconds);
                     for (int c = 0; c < con.Length; c++)
                     {
+                        /*if (dictionary[con[c]] != null)
+                        {
+                            count = dictionary[con[c]];
+                        }
+                        else
+                            count = 0;
+                        count++;
+                        if (!con[c].Contains("!") && showSubrules)
+                            dictionary[con[c]] = count;
+                        if (con[c].Contains("!") && showMainRules)
+                            dictionary[con[c]] = count;*/
                         if (!con[c].Contains("!") && showSubrules)
                         {
                             Dispatcher.Invoke(
@@ -1324,6 +1451,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
+            if (SaverHelper() == false)
+                return;
+            textEditor.Text = "";
             GDLFileLoaded = null;
             this.Title = HendlerHolder.ApplicationName;
         }
@@ -1331,7 +1461,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             LoadRulesF();
         }
-        
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveF();
+        }
+        private void SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveAsF();
+        }
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -1358,17 +1495,20 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
         private void GDL12TO10_Click(object sender, RoutedEventArgs e)
         {
-            //string textHelp = textEditor.Text;
-            //textEditor.Text = GDL12TO10AlphaConverter(textHelp);
+            string textHelp = textEditor.Text;
+            textEditor.Text = GDL12TO10AlphaConverter(textHelp);
             string GDLFileLoaded10 = this.GDLFileLoaded + " 1.0.gdl";
-            ///System.IO.File.WriteAllText(GDLFileLoaded10, textEditor.Text);
+            System.IO.File.WriteAllText(GDLFileLoaded10, textEditor.Text);
             LoadFile(GDLFileLoaded10);
             RunParser();
         }
 
         public String GDL12TO10AlphaConverter(String file12Content)
         {
-            
+            /*ParserToken[] rules = null;
+            ParserToken[] features = null;
+            GDLParser.ParseFile(file12, ref features, ref rules);*/
+            //String fileContent = System.IO.File.ReadAllText(file12);
             String fileContent = file12Content;
 
             bool allfeaturesFound = false;
@@ -1447,13 +1587,55 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 rulesContent = rulesContent.Replace(pair.Key.ToLower(), pair.Value);
             }
+            /*while (dictionary.Count > 0)
+            {
+                dictionary
+                rulesContent = rulesContent.Replace(pair.Key.ToLower(), pair.Value);
+            }*/
+            //System.IO.File.WriteAllText(file10, rulesContent);
             return rulesContent;
         }
 
+
+        private void ShowLineNumber_Click(object sender, RoutedEventArgs e)
+        {
+            textEditor.ShowLineNumbers = MenuItemShowLineNumber.IsChecked;
+        }
+        private void SliderFontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (textEditor != null)
+            {
+                textEditor.FontSize = SliderFontSize.Value;
+            }
+        }
+        private void EnableFileDropping_Click(object sender, RoutedEventArgs e)
+        {
+            HendlerHolder.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+        }
+        private void HelpSyntax_Click(object sender, RoutedEventArgs e)
+        {
+            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+        }
         private void HelpAbout_Click(object sender, RoutedEventArgs e)
         {
             AboutGDL_20 about = new AboutGDL_20();
             about.ShowDialog();
+            //this.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+            //this.skeletonWindow.FileDroppingEnabled = MenuItemEnableFileDropping.IsChecked;
+        }
+        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            layoutGrid.RowDefinitions[2].Height = new GridLength(145);
+            ExpanderStreams.Header = "Hide device streams";
+        }
+
+        private void Expander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            layoutGrid.RowDefinitions[2].Height = new GridLength(25);
+            ExpanderStreams.Header = "Show device streams";
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -1464,6 +1646,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 HendlerHolder.DisplayMessage(this, msg);
                 return;
             }
+            if (SaverHelper() == false)
+                return;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 // Note that you can have more than one file.
@@ -1489,9 +1673,71 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         bool isDataDirty = false;
 
-        
+        private bool SaverHelper()
+        {
+            if (this.isDataDirty)
+            {
+                string msg = "You have unsaved data. Do you want to save this file before closing?";
+                MessageBoxResult result =
+                  MessageBox.Show(this,
+                    msg,
+                    HendlerHolder.ApplicationName,
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    if (SaveF() == false)
+                        return true;
+                }
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         String GDLFileLoaded = null;
-        
+        private bool SaveF()
+        {
+            if (GDLFileLoaded == null)
+            {
+                return SaveAsF();
+            }
+            System.IO.File.WriteAllText(GDLFileLoaded, textEditor.Text);
+            isDataDirty = false;
+
+            String applicationName = HendlerHolder.ApplicationName;
+            if (applicationName == null)
+                applicationName = "";
+            this.Title = applicationName + "-[" + GDLFileLoaded + "]";
+            return true;
+        }
+
+        private bool SaveAsF()
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".gdl";
+            dlg.Filter = "GDL Files (*.gdl)|*.gdl";
+
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                System.IO.File.WriteAllText(dlg.FileName, textEditor.Text);
+                GDLFileLoaded = dlg.FileName;
+                this.Title = "GDL script editor -[" + dlg.FileName + "]";
+                isDataDirty = false;
+                return true;
+            }
+            return false;
+        }
+
         private void LoadFile(String fileName)
         {
             try
@@ -1499,6 +1745,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 String appllicationName = HendlerHolder.ApplicationName;
                 if (appllicationName == null)
                     appllicationName = "";
+                textEditor.Text = System.IO.File.ReadAllText(fileName);
                 this.Title = appllicationName + "-[" + fileName + "]";
                 this.GDLFileLoaded = fileName;
                 isDataDirty = false;
@@ -1553,8 +1800,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     () =>
                     {
                         MessageBox.Show(this, pe.Message, "GDL script editor", MessageBoxButton.OK, MessageBoxImage.Error);
-                        
+                        textEditor.Focus();
+                        textEditor.TextArea.Caret.Column = pe.col;
+                        textEditor.TextArea.Caret.Line = pe.ln;
                     }));
+                //MessageBox.Show(err.Message, "Error reding GDL file", MessageBoxButton.OK, MessageBoxImage.Error);
                 inter = oldInter;
             }
             Dispatcher.Invoke(
@@ -1572,7 +1822,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            
+            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.Key == Key.S)
+            {
+                SaveF();
+            }
             if (e.Key == Key.F3)
             {
                 LoadRulesF();
@@ -1725,7 +1978,30 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             RunParser(GDLFileLoaded);
         }
 
-       
+        #region Editor events
+
+        public void TextChangedEventHandler(
+        Object sender,
+        EventArgs e
+        )
+        {
+            String appllicationName = HendlerHolder.ApplicationName;
+            if (appllicationName == null)
+                appllicationName = "";
+            isDataDirty = true;
+            if (GDLFileLoaded == null)
+                this.Title = appllicationName + "*";
+            else
+                this.Title = appllicationName + " * -[" + GDLFileLoaded + "]";
+        }
+
+        public void CaretChangedEvent(Object sender, EventArgs e)
+        {
+            this.ColumnLabel.Content = "Col" + textEditor.TextArea.Caret.Column;
+            this.LineLabel.Content = "Ln" + textEditor.TextArea.Caret.Line;
+        }
+
+        #endregion
 
         private void SkeletonImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -1820,82 +2096,5 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-
-        }
-
-        public void AddToDictionary(String key)
-        {
-            if (dictionary.ContainsKey(key))
-            {
-                int countHelp = dictionary[key];
-                countHelp++;
-                dictionary[key] = countHelp;
-            }
-            else
-            {
-                dictionary.Add(key, 1);
-            }
-            SetText(dictionary);
-        }
-
-
-        public void SetText(Dictionary<string, int> dictionary)
-        {
-            string text = "";
-            foreach (KeyValuePair<string, int> pair in dictionary)
-            {
-                if (pair.Key.Contains("!"))
-                    text += pair.Key + ": " + pair.Value + "\r\n";
-                
-            }
-            this.counterTextBox.Text = text;
-            
-        }
-
-        public void takeSS()
-        {
-            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-            string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
-            string path = Path.Combine(myPhotos, "KiectSnapshot-" + time + ".png");
-            // create a png bitmap encoder which knows how to save a .png file
-            BitmapEncoder encoder = new PngBitmapEncoder();
-            // create frame from the writable bitmap and add to encoder
-            encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
-            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
-            FileStream fs = new FileStream(path, FileMode.Create);
-            encoder.Save(fs);
-        }
-
-        private void klik(object sender, RoutedEventArgs e)
-        {
-            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-            string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
-            string path = Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
-            // create a png bitmap encoder which knows how to save a .png file
-            BitmapEncoder encoder = new PngBitmapEncoder();
-            // create frame from the writable bitmap and add to encoder
-            encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
-            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
-            FileStream fs = new FileStream(path, FileMode.Create);
-            encoder.Save(fs);
-        }
-
-        public void ftpcon()
-        {
-            ftp ftpClient = new ftp(@"ftp://10.10.10.10/", "user", "password");
-            /* Upload a File */
-            ftpClient.upload("etc/test.txt", @"C:\Users\metastruct\Desktop\test.txt");
-            ftpClient = null;
-        }
-
-        
-        
     }
 }

@@ -69,10 +69,6 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -95,7 +91,6 @@
     <Compile Include="BallBoundingBox.cs" />
     <Compile Include="BallModel.cs" />
     <Compile Include="CollisionExemplar.cs" />
-    <Compile Include="ftp.cs" />
     <Compile Include="GraphicPrimitiveGenerator.cs" />
     <Compile Include="HendlerHolder.cs" />
     <Compile Include="JointIndex.cs" />

@@ -1,0 +1,17 @@
+RULE SpineMid.x[0] - Neck.x[0] > 0 &  Neck.x[0] - Head.x[0] > 0 & abs(SpineMid.x[0] - Head.x[0]) > 100 THEN MiringKiri!
+
+RULE SpineMid.x[0] - Neck.x[0] < 0 &  Neck.x[0] - Head.x[0] < 0 & abs(SpineMid.x[0] - Head.x[0]) > 100 THEN MiringKanan!
+
+//RULE abs(angle( Neck.xyz[0]-SpineMid.xyz[0], Neck.xyz[0]-Head.xyz[0] )) < 170 THEN Menoleh
+
+//RULE Menoleh & Neck.x[0] - Head.x[0] < 0 THEN MenolehKanan!
+
+//RULE Menoleh & Neck.x[0] - Head.x[0] > 0 THEN MenolehKiri!
+
+RULE abs(angle( ElbowRight.xyz[0] - WristRight.xyz[0], ElbowRight.xyz[0] -ShoulderRight.xyz[0] )) > 165 & abs(WristRight.x[0] - ShoulderRight.x[0]) < 200 & (WristRight.z[0] - ShoulderRight.z[0]) < 200 THEN TanganKananLurus!
+
+RULE abs(angle( ElbowLeft.xyz[0] - WristLeft.xyz[0], ElbowLeft.xyz[0] -ShoulderLeft.xyz[0] )) > 165 & abs(WristLeft.x[0] - ShoulderLeft.x[0]) < 200 & abs(WristLeft.z[0] - ShoulderLeft.z[0]) < 200 THEN TanganKiriLurus!
+
+RULE HandRight.y[0] - Head.y[0] > -50 & abs(ElbowRight.x[0] - WristRight.x[0]) < 200 THEN MengangkatTanganKanan!
+
+RULE HandLeft.y[0] - Head.y[0] > -50 & abs(ElbowLeft.x[0] - WristLeft.x[0]) < 200 THEN MengangkatTanganKiri!

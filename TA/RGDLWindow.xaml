@@ -1,0 +1,30 @@
+﻿<Window x:Class="org.GDLStudio.RGDLWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="R-GDL" Height="362" Width="391" Icon="Images/GDL ICO.png">
+    <Grid Height="318">
+        <Button Content="Compute" Height="23" HorizontalAlignment="Left" Margin="12,283,0,0" Name="ComputeButton" VerticalAlignment="Top" Width="75" Click="ComputeButton_Click" />
+        <Button Content="Select" Height="23" HorizontalAlignment="Left" Margin="279,14,0,0" Name="SKLFileButton" VerticalAlignment="Top" Width="75" Click="SKLFileButton_Click" />
+        <Button Content="Select" Height="23" HorizontalAlignment="Left" Margin="279,43,0,0" Name="InputGDLButton" VerticalAlignment="Top" Width="75" Click="InputGDLButton_Click" />
+        <Button Content="Select" Height="23" HorizontalAlignment="Left" Margin="279,70,0,0" Name="OutputButton" VerticalAlignment="Top" Width="75" Click="OutputButton_Click" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,14,0,0" Name="SKLFileTextBox" VerticalAlignment="Top" Width="170" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,70,0,0" Name="OutputGDLtextBox" VerticalAlignment="Top" Width="170" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,43,0,0" Name="InputGDLtextBox" VerticalAlignment="Top" Width="170" />
+        <Label Content="SKL file" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Content="Input GDL" Height="28" HorizontalAlignment="Left" Margin="12,42,0,0" Name="label2" VerticalAlignment="Top" />
+        <Label Content="Output GDL" Height="28" HorizontalAlignment="Left" Margin="12,69,0,0" Name="label3" VerticalAlignment="Top" />
+        <Label Content="Clasters count" Height="28" HorizontalAlignment="Left" Margin="12,99,0,0" Name="label4" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,99,0,0" Name="ClasterCountBox" VerticalAlignment="Top" Width="56" Text="3" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,128,0,0" Name="MinimaTimeDistanceBox" VerticalAlignment="Top" Width="56" Text="0.5" />
+        <Label Content="Min. time [Sec]" Height="28" HorizontalAlignment="Left" Margin="12,128,0,0" Name="label5" VerticalAlignment="Top" />
+        <RadioButton Content="GDL 1.0" HorizontalAlignment="Left" Margin="238,156,0,146" Name="radioButtonGDL1_0" GroupName="GDL_Group" />
+        <RadioButton Content="GDL 1.1" Height="16" HorizontalAlignment="Left" Margin="238,178,0,0" Name="radioButtonGDL1_1" VerticalAlignment="Top" GroupName="GDL_Group" IsChecked="True" />
+        <Label Content="Rule Name" Height="28" HorizontalAlignment="Left" Margin="12,156,0,0" Name="label6" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,156,0,0" Name="textBoxRuleName" Text="ruleName" VerticalAlignment="Top" Width="117" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,185,0,0" Name="textBoxEpsilon" VerticalAlignment="Top" Width="120" Text="20" />
+        <Label Content="Epsilon" Height="28" HorizontalAlignment="Left" Margin="12,183,0,0" Name="label7" VerticalAlignment="Top" />
+        <CheckBox Content="Random initialization" Height="16" HorizontalAlignment="Left" Margin="12,249,0,0" Name="checkBoxRandomInitialization" VerticalAlignment="Top" IsChecked="True" Checked="checkBoxRandomInitialization_Checked" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="103,214,0,0" Name="textBoxMaxIterations" Text="10000" VerticalAlignment="Top" Width="120" />
+        <Label Content="Max. iterations" Height="28" HorizontalAlignment="Left" Margin="12,209,0,0" Name="label8" VerticalAlignment="Top" />
+    </Grid>
+</Window>

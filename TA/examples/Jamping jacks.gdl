@@ -1,5 +1,5 @@
 //-------------Original FEATURES-------------------------------------
-===FEATURE angle(ShoulderRight.xyz[0] - ElbowRight.xyz[0],  WristRight.xyz[0] - ElbowRight.xyz[0]) AS RightElbow
+FEATURE angle(ShoulderRight.xyz[0] - ElbowRight.xyz[0],  WristRight.xyz[0] - ElbowRight.xyz[0]) AS RightElbow
 FEATURE angle(ShoulderLeft.xyz[0] - ElbowLeft.xyz[0],  WristLeft.xyz[0] - ElbowLeft.xyz[0]) AS LeftElbow
 FEATURE angle(SpineShoulder.xyz[0] - ShoulderRight.xyz[0],  ElbowRight.xyz[0] - ShoulderRight.xyz[0]) AS RightShoulder
 FEATURE angle(SpineShoulder.xyz[0] - ShoulderLeft.xyz[0],  ElbowLeft.xyz[0] - ShoulderLeft.xyz[0]) AS LeftShoulder
