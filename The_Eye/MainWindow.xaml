@@ -166,9 +166,9 @@
             <RowDefinition Height="36" />
         </Grid.RowDefinitions>
         <Button x:Name="ssButton" Content="Take ScreenShoot" Margin="928,463,84,144" Grid.Row="2" Click="klik"/>
-        <TextBlock x:Name="textBlock1" TextWrapping="Wrap" Text="IR" Margin="1102,486,254,127" Grid.Row="2" Foreground="White"/>
-        <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Skeleton" Margin="928,486,399,122" Grid.Row="2" Foreground="White"/>
-        <TextBlock x:Name="textBlock2" TextWrapping="Wrap" Text="Depth" Margin="1256,486,84,127" Grid.Row="2" Foreground="White"/>
+        <TextBlock x:Name="textBlock1" TextWrapping="Wrap" Text="IR" Margin="1102,486,254,122" Grid.Row="2" Foreground="White" FontSize="14"/>
+        <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Skeleton" Margin="928,486,392,122" Grid.Row="2" Foreground="White" FontSize="14"/>
+        <TextBlock x:Name="textBlock2" TextWrapping="Wrap" Text="Depth" Margin="1256,486,79,122" Grid.Row="2" Foreground="White" FontSize="14"/>
 
 
         <Grid

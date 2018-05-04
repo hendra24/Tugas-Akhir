@@ -154,9 +154,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// GDL
         /// </summary>
         Stopwatch GDLWatch = new Stopwatch();
+        Stopwatch GDLWatch2 = new Stopwatch();
         Stopwatch FPSStopwatch = new Stopwatch();
         public GDLInterpreter inter = null;
-
+        //parameter RBMQ
+        RBMQ rbmq = new RBMQ();
+        string tujuan = "cek1";
+        string queue_name = "cek1";
         ////////
         private static double AcquisitionFrequencyTreshold = 0.01;
         /// <summary>
@@ -164,6 +168,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// </summary>
         public MainWindow()
         {
+
+            ///Inisiasi rbmq
+            Console.WriteLine("Connect");
+            rbmq.InitRMQConnection(); // inisialisasi parameter (secara default) untuk koneksi ke server RMQ
+            Console.WriteLine("Starting Conection"); 
+            rbmq.CreateRMQConnection(); // memulai koneksi dengan RMQ
+            rbmq.CreateRMQChannel(queue_name);
+            
+           
             // one sensor is currently supported
             HendlerHolder.kinectSensor = KinectSensor.GetDefault();
             dictionary = new Dictionary<string, int>();
@@ -354,6 +367,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 this.bodyFrameReader.FrameArrived += this.ReaderBody_FrameArrived;
                 GDLWatch.Start();
+                GDLWatch2.Start();
 
                 RLUT = new byte[6000];
                 GLUT = new byte[6000];
@@ -381,6 +395,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="e">event arguments</param>
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
+
             int count = HendlerHolder.PlayerWindows.Count -1;
             for (int a = count; a >= 0; a--)
             {
@@ -407,11 +422,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 HendlerHolder.kinectSensor.Close();
                 HendlerHolder.kinectSensor = null;
             }
+            
             if (HendlerHolder.RecognitionCounter != null)
             {
                 HendlerHolder.RecognitionCounter.Close();
                 HendlerHolder.RecognitionCounter = null;
             }
+            rbmq.Disconnect();
         }
 
         
@@ -502,6 +519,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 counterDepth = 0;
                 startTimeDepth = FPSStopwatch.ElapsedMilliseconds;
                 DepthFPS.Text = fpsDepth.ToString() + " fps";
+                RGBFPS.Text = fpsDepth.ToString() + " fps";
+                SkeletonFPS.Text = fpsDepth.ToString() + " fps";
+                InfraredFPS.Text = fpsDepth.ToString() + " fps"; ;
             }
         }
 
@@ -671,6 +691,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void ReaderBody_FrameArrived(object sender, BodyFrameArrivedEventArgs e)
         {
             bool dataReceived = false;
+            int tbh = 0;
             HendlerHolder.OpenRecognitionCounter();
             Vector4 FloorClipPlane = new Vector4();
             using (BodyFrame bodyFrame = e.FrameReference.AcquireFrame())
@@ -694,32 +715,66 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if (dataReceived && inter != null && GDLWatch.Elapsed.TotalSeconds > AcquisitionFrequencyTreshold)
             {
                 Body firstTracked = null;
+                Body secondTracked = null;
                 for (int a = 0; a < this.bodies.Length && firstTracked == null; a++)
                 {
-                    if (((Body)bodies[a]).IsTracked)
+                    
+                    if (((Body)bodies[a]).IsTracked  )
+                    {
+                        
                         firstTracked = (Body)bodies[a];
+                        tbh = a;
+                        Console.WriteLine(this.bodies.Length + " Person 1 " + a + " tbh " + tbh);
+                    }
+
+                    if (((Body)bodies[a]).IsTracked && a > tbh)
+                    {
+                        
+                        secondTracked = (Body)bodies[a];
+                        Console.WriteLine(this.bodies.Length + " Person 2 " + a + " tbh " + tbh);
+                        tbh = 0;
+                    }
                 }
+
                 if (firstTracked != null)
                 {
                     Point3D[] bodyParts = HendlerHolder.GenerateBodyPartArray(firstTracked, 0);
+                    Point3D[] bodyParts2 = HendlerHolder.GenerateBodyPartArray(firstTracked, 1);
                     GDLWatch.Stop();
+                    GDLWatch2.Start();
                     double TimeHelp = GDLWatch.Elapsed.TotalSeconds;
+                    double TimeHelp2 = GDLWatch2.Elapsed.TotalSeconds;
                     GDLWatch.Reset();
+                    GDLWatch2.Reset();
                     GDLWatch.Start();
+                    GDLWatch2.Start();
                     String[] con = inter.ReturnConclusions(bodyParts, TimeHelp);
+                    String[] con2 = inter.ReturnConclusions(bodyParts2, TimeHelp2);
                     String allConclusions = "";
                     String conclusionsWithExclamation = "";
                     for (int a = 0; a < con.Length; a++)
                     {
                         allConclusions += con[a] + "\r\n";
+                        //Console.WriteLine(con[a]);
                         if (con[a].Contains("!"))
                         {
-                            conclusionsWithExclamation += con[a] + "\r\n";
+                            conclusionsWithExclamation += "Person 1" +  con[a] + "\r\n";
                         }
                         HendlerHolder.OpenRecognitionCounter().AddToDictionary(con[a]);
                         AddToDictionary(con[a]);
                     }
-                    
+
+                    for (int b = 0; b < con2.Length; b++)
+                    {
+                        allConclusions += con2[b] + "\r\n";
+                        if (con2[b].Contains("!"))
+                        {
+                            conclusionsWithExclamation += "Person 2"+ con2[b] + "\r\n";
+                        }
+                        //HendlerHolder.OpenRecognitionCounter().AddToDictionary(con[a]);
+                        AddToDictionary(con2[b]);
+                    }
+
                     if (HendlerHolder.SkeletonPlayerWindow != null)
                     {
                         HendlerHolder.SkeletonPlayerWindow.UpdateGDLOutput(allConclusions, conclusionsWithExclamation);
@@ -737,6 +792,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         HendlerHolder.RGBPlayerWindow.UpdateGDLOutput(allConclusions, conclusionsWithExclamation);
                     }
                 }
+
             }
 
             if (dataReceived)
@@ -795,9 +851,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     {
                         // Draw a transparent background to set the render size
                         dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-                        //if (Background.SelectedIndex == 0)
-                        //    dc.DrawImage(this.colorBitmap, new Rect(0, 0, 640, 480));
-                        //if (Background.SelectedIndex == 1)
                         dc.DrawImage(this.depthBitmap, new Rect(0, 0, 512, 424));
                         int penIndex = 0;
                         foreach (Body body in this.bodies)
@@ -1670,27 +1723,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 {
                     if (firstTracked == null)
                         firstTracked = tm[b];
-                    ShowFrameWindow sfw = new ShowFrameWindow();
-                    using (DrawingContext dc = sfw.drawingVisual.RenderOpen())
-                    {
-                        dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, 512, 424));
-                        for (int c = 0; c < tm.Length; c++)
-                        {
-                            Pen drawPen = HendlerHolder.BodyColors[0];
-                            this.DrawBody(firstTracked, dc, drawPen);
-                        }
-                            //this.DrawBonesAndJoints(tm[c], dc);
-                    }
-                    String textHelp = "Rule: " + pair.Key + ", Frame no.: " + pair.Value;
-                    sfw.Title = textHelp;
-                    sfw.InfoTextBox.Text = textHelp;
-                    sfw.SkeletonRTB.Render(sfw.drawingVisual);
-                    sfw.Show();
-                    sfw.UpdateImage(sfw.SkeletonRTB);
                 }
-
-
-
             }
         }
 
@@ -1832,17 +1865,34 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public void AddToDictionary(String key)
         {
+            int countHelp ;
             if (dictionary.ContainsKey(key))
             {
-                int countHelp = dictionary[key];
+                countHelp = dictionary[key];
                 countHelp++;
                 dictionary[key] = countHelp;
+                
             }
             else
             {
                 dictionary.Add(key, 1);
             }
             SetText(dictionary);
+            if (dictionary[key] == 60)
+            {
+                foreach (KeyValuePair<string, int> pair in dictionary)
+                {
+                    if (pair.Key.Contains("!"))
+                    {
+                        uploadRBMQ(pair.Key);
+                    }
+                }
+                
+                countHelp = 1;
+                dictionary.Clear();
+                takeSS();
+            }
+
         }
 
 
@@ -1852,28 +1902,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             foreach (KeyValuePair<string, int> pair in dictionary)
             {
                 if (pair.Key.Contains("!"))
-                    text += pair.Key + ": " + pair.Value + "\r\n";
-                
+                {
+                    text = pair.Key ;
+                }
             }
             this.counterTextBox.Text = text;
-            
         }
 
         public void takeSS()
-        {
-            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-            string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
-            string path = Path.Combine(myPhotos, "KiectSnapshot-" + time + ".png");
-            // create a png bitmap encoder which knows how to save a .png file
-            BitmapEncoder encoder = new PngBitmapEncoder();
-            // create frame from the writable bitmap and add to encoder
-            encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
-            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
-            FileStream fs = new FileStream(path, FileMode.Create);
-            encoder.Save(fs);
-        }
-
-        private void klik(object sender, RoutedEventArgs e)
         {
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
             string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
@@ -1882,9 +1918,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             BitmapEncoder encoder = new PngBitmapEncoder();
             // create frame from the writable bitmap and add to encoder
             encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
-            String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
-            FileStream fs = new FileStream(path, FileMode.Create);
+            //String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
+            FileStream fs = new FileStream(path, FileMode.CreateNew);
             encoder.Save(fs);
+            //loadImage(path);
+        }
+
+        private void klik(object sender, RoutedEventArgs e)
+        {
+            takeSS();
         }
 
         public void ftpcon()
@@ -1895,7 +1937,19 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             ftpClient = null;
         }
 
-        
-        
+        private void loadImage(String names)
+        {
+            Uri myUri = new Uri(names, UriKind.RelativeOrAbsolute);
+            PngBitmapDecoder decoder = new PngBitmapDecoder(myUri, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+            BitmapSource bitmapSource = decoder.Frames[0];
+            this._1image.Source = bitmapSource;
+        }
+
+        private void uploadRBMQ(String name)
+        {
+            rbmq.SendMessage(tujuan, name);
+            Console.WriteLine(">> SENDED");
+        }
+
     }
 }
