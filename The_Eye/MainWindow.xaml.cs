@@ -149,6 +149,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// Largest value to display when the infrared data is normalized
         /// </summary>
         private const float InfraredOutputValueMaximum = 1.0f;
+        
+        // SS parameter
+        int flag = 0;
+        string prev_path = "0";
 
         /// <summary>
         /// GDL
@@ -168,7 +172,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// </summary>
         public MainWindow()
         {
-
+            
             ///Inisiasi rbmq
             Console.WriteLine("Connect");
             rbmq.InitRMQConnection(); // inisialisasi parameter (secara default) untuk koneksi ke server RMQ
@@ -724,7 +728,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         
                         firstTracked = (Body)bodies[a];
                         tbh = a;
-                        Console.WriteLine(this.bodies.Length + " Person 1 " + a + " tbh " + tbh);
+                        //Console.WriteLine(this.bodies.Length + " Person 1 " + a + " tbh " + tbh);
                     }
 
                     if (((Body)bodies[a]).IsTracked && a > tbh)
@@ -1865,6 +1869,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public void AddToDictionary(String key)
         {
+            
             int countHelp ;
             if (dictionary.ContainsKey(key))
             {
@@ -1878,7 +1883,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 dictionary.Add(key, 1);
             }
             SetText(dictionary);
-            if (dictionary[key] == 60)
+            if (dictionary[key] == 100)
             {
                 foreach (KeyValuePair<string, int> pair in dictionary)
                 {
@@ -1891,8 +1896,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 countHelp = 1;
                 dictionary.Clear();
                 takeSS();
+                
             }
-
+            
         }
 
 
@@ -1906,11 +1912,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     text = pair.Key ;
                 }
             }
+
             this.counterTextBox.Text = text;
+            
         }
 
         public void takeSS()
         {
+            
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
             string myPhotos = "C:\\Users\\Hendra\\Desktop\\";
             string path = Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
@@ -1921,7 +1930,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             //String filename = "ScreenCapture-" + DateTime.Now.ToString("ddMMyyyy-hhmmss") + ".jpg";
             FileStream fs = new FileStream(path, FileMode.CreateNew);
             encoder.Save(fs);
-            //loadImage(path);
+            fs.Close();
+            loadImage(path);
+            if (flag != 0 && prev_path != "0")
+            {
+                loadImage2(prev_path);
+            }
+            prev_path = path;
+            flag = 1;
         }
 
         private void klik(object sender, RoutedEventArgs e)
@@ -1943,6 +1959,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             PngBitmapDecoder decoder = new PngBitmapDecoder(myUri, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
             BitmapSource bitmapSource = decoder.Frames[0];
             this._1image.Source = bitmapSource;
+        }
+
+        private void loadImage2(String names)
+        {
+            Uri myUri = new Uri(names, UriKind.RelativeOrAbsolute);
+            PngBitmapDecoder decoder = new PngBitmapDecoder(myUri, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+            BitmapSource bitmapSource = decoder.Frames[0];
+            this._2image.Source = bitmapSource;
         }
 
         private void uploadRBMQ(String name)
